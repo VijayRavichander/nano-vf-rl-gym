@@ -4,7 +4,15 @@ from datasets import load_dataset
 import torch
 import verifiers as vf
 
-model_name = 'willcb/Qwen2.5-0.5B-Reverse-SFT'
+"""
+inference:
+CUDA_VISIBLE_DEVICES=0 vf-vllm --model Qwen/Qwen2.5-0.5B-Instruct
+
+training:
+CUDA_VISIBLE_DEVICES=1 accelerate launch --num-processes 1 --config-file zero3.yaml train.py
+"""
+
+model_name = 'Qwen/Qwen2.5-0.5B-Instruct'
 dataset = load_dataset('willcb/V3-wordle-test', cache_dir=None).map(lambda x: {'question': x['answer'], 'answer': sorted(x['answer'])})
 
 parser = vf.XMLParser(['think', 'answer'], answer_field="answer")
@@ -36,7 +44,7 @@ vf_env = vf.SingleTurnEnv(
 )
 
 
-args = vf.grpo_defaults(run_name = "")
+args = vf.grpo_defaults(run_name = "sort-text-Qwen-0.5B")
 args.num_iterations = 2
 args.per_device_train_batch_size = 10
 args.num_generations = 10
