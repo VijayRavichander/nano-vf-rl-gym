@@ -16,7 +16,7 @@ model_name = 'Qwen/Qwen2.5-0.5B-Instruct'
 
 dataset = load_dataset('willcb/V3-wordle', split = "train",  cache_dir=None).map(lambda x: {'question': x['answer'], 'answer': sorted(x['answer'])})
 
-dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']])
+dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 
 
 parser = vf.XMLParser(['think', 'answer'], answer_field="answer")
