@@ -14,7 +14,7 @@ CUDA_VISIBLE_DEVICES=1 accelerate launch --num-processes 1 --config-file zero3.y
 
 model_name = 'Qwen/Qwen2.5-0.5B-Instruct'
 
-dataset = load_dataset('willcb/V3-wordle', split = "train",  cache_dir=None).map(lambda x: {'question': x['answer'], 'answer': sorted(x['answer'])})
+dataset = load_dataset('willcb/V3-wordle', split = "train",  cache_dir=None).map(lambda x: {'question': x['answer'], 'answer': "".join(sorted(x['answer']))})
 
 dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 
@@ -30,7 +30,7 @@ def sort_reward_func(completion, answer, **kwargs) -> float:
     Check if the completion is sorted    
     """
     # print(f"Completion: {completion} \n Answer: {answer} \n")
-    return 1.0 if completion == answer else 0.0
+    return 1.0 if parser.parse_answer(completion) == answer else 0.0
 
 
 rubric = vf.Rubric(funcs=[
@@ -48,7 +48,6 @@ vf_env = vf.SingleTurnEnv(
     max_concurrent=100
 )
 
-
 args = vf.grpo_defaults(run_name = "sort-text-Qwen-0.5B")
 args.num_iterations = 2
 args.per_device_train_batch_size = 2
@@ -58,8 +57,12 @@ args.eval_strategy = 'steps'
 args.eval_steps = 10
 args.max_steps = 100
 args.report_to = 'wandb'
+args.push_to_hub = True
+args.hub_strategy = "every_save"
+args.save_strategy="steps"
+args.save_steps=10
 
-model_kwargs = dict(torch_dtype = torch.float16, attn_implementation = "eager", use_cache = False)
+model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "eager", use_cache = False)
 
 model, tokenizer = vf.get_model_and_tokenizer(model_name, use_liger = False, model_kwargs = model_kwargs)
 
