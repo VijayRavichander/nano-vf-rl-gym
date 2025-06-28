@@ -3,14 +3,18 @@ from openai import OpenAI
 from datasets import load_dataset
 import torch
 import verifiers as vf
+from dotenv import load_dotenv
+
 
 """
 inference:
 CUDA_VISIBLE_DEVICES=0 vf-vllm --model Qwen/Qwen2.5-0.5B-Instruct --enforce-eager
 
 training:
-CUDA_VISIBLE_DEVICES=1 accelerate launch --num-processes 1 --config-file zero3.yaml train.py
+CUDA_VISIBLE_DEVICES=1 accelerate launch --num-processes 1 --config-file config/zero3.yaml lexo-sort/grpo_train.py
 """
+
+load_dotenv()
 
 model_name = 'Qwen/Qwen2.5-0.5B-Instruct'
 
@@ -55,7 +59,7 @@ args.num_generations = 8
 args.gradient_accumulation_steps = 4
 args.eval_strategy = 'steps'
 args.eval_steps = 10
-args.max_steps = 100
+args.max_steps = 10
 args.report_to = 'wandb'
 args.push_to_hub = True
 args.hub_strategy = "every_save"
