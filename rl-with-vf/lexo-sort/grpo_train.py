@@ -4,6 +4,7 @@ from datasets import load_dataset
 import torch
 import verifiers as vf
 from dotenv import load_dotenv
+import wandb
 
 
 """
@@ -16,18 +17,25 @@ CUDA_VISIBLE_DEVICES=1 accelerate launch --num-processes 1 --config-file config/
 
 load_dotenv()
 
+wandb.init(project = "lexo-sort")
+
 model_name = 'Qwen/Qwen2.5-0.5B-Instruct'
 
 dataset = load_dataset('willcb/V3-wordle', split = "train",  cache_dir=None).map(lambda x: {'question': x['answer'], 'answer': "".join(sorted(x['answer']))})
 
 dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 
+eval_dataset = dataset.select(range(32)) #type: ignore
+train_dataset = dataset.select(range(32, len(dataset))) #type: ignore
+
 
 parser = vf.XMLParser(['think', 'answer'], answer_field="answer")
+
 system_prompt = f"""Respond in the following format:
 {parser.get_format_str()}
 
 Sort the string lexographically"""
+
 
 def sort_reward_func(completion, answer, **kwargs) -> float:
     """
@@ -54,12 +62,12 @@ vf_env = vf.SingleTurnEnv(
 
 args = vf.grpo_defaults(run_name = "sort-text-Qwen-0.5B")
 args.num_iterations = 2
-args.per_device_train_batch_size = 2
+args.per_device_train_batch_size = 4
 args.num_generations = 8
 args.gradient_accumulation_steps = 4
 args.eval_strategy = 'steps'
 args.eval_steps = 10
-args.max_steps = 10
+args.max_steps = 100
 args.report_to = 'wandb'
 args.push_to_hub = True
 args.hub_strategy = "every_save"
