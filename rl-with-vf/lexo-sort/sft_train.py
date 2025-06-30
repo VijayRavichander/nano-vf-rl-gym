@@ -2,14 +2,15 @@ import verifiers as vf
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
 import torch
+import wandb
 
 """
 accelerate launch --config-file config/zero3.yaml --num-processes 1 lexo-sort/sft_train.py
 """
 
+wandb.init(project = "lexo-sort")
 
 model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "eager", use_cache = False)
-
 
 model, tokenizer = vf.get_model_and_tokenizer("Qwen/Qwen2.5-0.5B-Instruct", use_liger=False, model_kwargs = model_kwargs)
 dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
