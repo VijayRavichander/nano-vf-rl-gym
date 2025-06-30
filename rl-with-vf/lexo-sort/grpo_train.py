@@ -60,7 +60,7 @@ vf_env = vf.SingleTurnEnv(
     max_concurrent=100
 )
 
-args = vf.grpo_defaults(run_name = "sort-text-Qwen-0.5B")
+args = vf.grpo_defaults(run_name = "lexo-sort-Qwen-0.5B-SFT")
 args.num_iterations = 2
 args.per_device_train_batch_size = 4
 args.num_generations = 8
