@@ -1,13 +1,17 @@
 import verifiers as vf
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
+import torch
 
 """
-accelerate launch --config-file configs/zero3.yaml --num-processes 1 lexo-sort/sft_train.py
+accelerate launch --config-file config/zero3.yaml --num-processes 1 lexo-sort/sft_train.py
 """
 
-# convenience function for FA2 initialization
-model, tokenizer = vf.get_model_and_tokenizer("Qwen/Qwen2.5-0.5B-Instruct", use_liger=False)
+
+model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "eager", use_cache = False)
+
+
+model, tokenizer = vf.get_model_and_tokenizer("Qwen/Qwen2.5-0.5B-Instruct", use_liger=False, model_kwargs = model_kwargs)
 dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 tok_counts = []
@@ -30,7 +34,7 @@ print(f"Median tokens: {sorted(tok_counts)[len(tok_counts) // 2]}")
 args = SFTConfig(
     max_length=4096,
     output_dir="sft-warmup-lexo-sort",
-    per_device_train_batch_size=8,
+    per_device_train_batch_size=16,
     gradient_accumulation_steps=1,
     gradient_checkpointing=True,
     bf16=True,
