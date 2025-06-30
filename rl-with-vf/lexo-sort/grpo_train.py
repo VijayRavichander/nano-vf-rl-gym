@@ -9,7 +9,7 @@ import wandb
 
 """
 inference:
-CUDA_VISIBLE_DEVICES=0 vf-vllm --model Qwen/Qwen2.5-0.5B-Instruct --enforce-eager
+CUDA_VISIBLE_DEVICES=0 vf-vllm --model vijay-ravichander/Qwen2.5-0.5B-Lexo-Sort-SFT --enforce-eager
 
 training:
 CUDA_VISIBLE_DEVICES=1 accelerate launch --num-processes 1 --config-file config/zero3.yaml lexo-sort/grpo_train.py
@@ -19,7 +19,7 @@ load_dotenv()
 
 wandb.init(project = "lexo-sort")
 
-model_name = 'Qwen/Qwen2.5-0.5B-Instruct'
+model_name = 'vijay-ravichander/Qwen2.5-0.5B-Lexo-Sort-SFT'
 
 dataset = load_dataset('willcb/V3-wordle', split = "train",  cache_dir=None).map(lambda x: {'question': x['answer'], 'answer': "".join(sorted(x['answer']))})
 
@@ -74,7 +74,7 @@ args.hub_strategy = "every_save"
 args.save_strategy="steps"
 args.save_steps=10
 
-model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "eager", use_cache = False)
+model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "flash_attention_2", use_cache = False) #attention options: eager
 
 model, tokenizer = vf.get_model_and_tokenizer(model_name, use_liger = False, model_kwargs = model_kwargs)
 

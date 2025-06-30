@@ -8,11 +8,8 @@ dependencies = [
     "datasets>=3.6.0",
     "deepspeed>=0.17.1",
     "dotenv>=0.9.9",
-    "fastapi>=0.115.14",
     "huggingface-hub[cli]>=0.33.0",
     "ipykernel>=6.29.5",
     "openai>=1.91.0",
-    "uvicorn>=0.34.3",
     "verifiers>=0.0.0",
-    "vllm>=0.9.1",
 ]
