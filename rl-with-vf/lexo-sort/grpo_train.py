@@ -74,7 +74,7 @@ args.hub_strategy = "every_save"
 args.save_strategy="steps"
 args.save_steps=10
 
-model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "flash_attention_2", use_cache = False) #attention options: eager
+model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "flash_attention_2", use_cache = False) #attention options: eager | flash_attention_2
 
 model, tokenizer = vf.get_model_and_tokenizer(model_name, use_liger = False, model_kwargs = model_kwargs)
 
