@@ -10,3 +10,5 @@ wheels/
 .venv
 .env 
 ssh_script.sh
+wandb
+outputs

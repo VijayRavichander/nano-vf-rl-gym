@@ -5,17 +5,21 @@ import torch
 import wandb
 
 """
-accelerate launch --config-file config/zero3.yaml --num-processes 1 lexo-sort/sft_train.py
+accelerate launch --config-file config/zero3.yaml --num-processes 2 lexo-sort/sft_train.py
 """
 
 wandb.init(project = "lexo-sort")
 
-model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "eager", use_cache = False)
+model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "flash_attention_2", use_cache = False)
 
 model, tokenizer = vf.get_model_and_tokenizer("Qwen/Qwen2.5-0.5B-Instruct", use_liger=False, model_kwargs = model_kwargs)
 dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
+
+dataset = dataset.select(range(500)) #type: ignore
+
 tok_counts = []
+
 for row in dataset:
     # count tokens in (prompt, completion)
     messages = row['prompt'] + row['completion'] # type: ignore
@@ -58,4 +62,5 @@ trainer = SFTTrainer(
     args=args,
     train_dataset=dataset # type: ignore
 )
+
 trainer.train()
