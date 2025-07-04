@@ -9,7 +9,7 @@ import wandb
 
 """
 inference:
-CUDA_VISIBLE_DEVICES=0 vf-vllm --model vijay-ravichander/Lexo-Sort-Qwen-0.5B --enforce-eager
+CUDA_VISIBLE_DEVICES=0 vf-vllm --model Qwen/Qwen2.5-0.5B-Instruct --enforce-eager
 
 training:
 CUDA_VISIBLE_DEVICES=1 accelerate launch --num-processes 1 --config-file config/zero3.yaml lexo-sort/grpo_train.py
@@ -19,7 +19,7 @@ load_dotenv()
 
 wandb.init(project = "lexo-sort")
 
-model_name = 'willcb/Qwen3-1.7B'
+model_name = 'Qwen/Qwen2.5-0.5B-Instruct'
 
 dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
@@ -62,7 +62,7 @@ vf_env = vf.SingleTurnEnv(
     max_concurrent=100
 )
 
-args = vf.grpo_defaults(run_name = "Qwen3-1.7B-Lexo-Sort-R1")
+args = vf.grpo_defaults(run_name = "Qwen2.5-0.5B-Lexo-Sort")
 args.num_iterations = 2
 args.per_device_train_batch_size = 4
 args.num_generations = 8
@@ -78,7 +78,7 @@ args.save_steps=10
 
 model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "flash_attention_2", use_cache = False) #attention options: eager | flash_attention_2
 
-model, tokenizer = vf.get_model_and_tokenizer(model_name, use_liger = False, model_kwargs = model_kwargs)
+model, tokenizer = vf.get_model_and_tokenizer(model_name, use_liger = True, model_kwargs = model_kwargs)
 
 trainer = vf.GRPOTrainer(
     model=model,

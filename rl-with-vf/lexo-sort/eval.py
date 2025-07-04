@@ -20,7 +20,6 @@ dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 
-
 ## EVAL SPLIT
 dataset = dataset.select(range(len(dataset) - 50, len(dataset))) #type:ignore
 # dataset = dataset.select(range(0, 50)) #type:ignore
@@ -63,4 +62,3 @@ reward = [1 if v == 1.2 else 0 for v in results["reward"]]
 acc = sum(reward) / len(reward)
 
 print(f"Accuracy: {acc}")
-
