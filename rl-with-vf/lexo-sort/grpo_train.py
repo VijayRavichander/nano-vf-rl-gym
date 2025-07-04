@@ -21,7 +21,7 @@ wandb.init(project = "lexo-sort")
 
 model_name = 'vijay-ravichander/Lexo-Sort-Qwen-0.5B'
 
-dataset = load_dataset('willcb/V3-wordle', split = "train",  cache_dir=None).map(lambda x: {'question': x['answer'], 'answer': "".join(sorted(x['answer']))})
+dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 

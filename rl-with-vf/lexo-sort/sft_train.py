@@ -12,11 +12,12 @@ wandb.init(project = "lexo-sort")
 
 model_kwargs = dict(torch_dtype = torch.bfloat16, attn_implementation = "flash_attention_2", use_cache = False)
 
-model, tokenizer = vf.get_model_and_tokenizer("Qwen/Qwen2.5-0.5B-Instruct", use_liger=False, model_kwargs = model_kwargs)
+model, tokenizer = vf.get_model_and_tokenizer("willcb/Qwen3-1.7B", use_liger=True, model_kwargs = model_kwargs)
 dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 
-dataset = dataset.select(range(500)) #type: ignore
+train_dataset = dataset.select(range(500)) #type: ignore
+eval_dataset = dataset.select((len(dataset) - 32, len(dataset) - 1)) #type: ignore
 
 tok_counts = []
 
@@ -39,7 +40,7 @@ print(f"Median tokens: {sorted(tok_counts)[len(tok_counts) // 2]}")
 args = SFTConfig(
     max_length=4096,
     output_dir="sft-warmup-lexo-sort",
-    per_device_train_batch_size=16,
+    per_device_train_batch_size=32,
     gradient_accumulation_steps=1,
     gradient_checkpointing=True,
     bf16=True,
@@ -54,13 +55,13 @@ args = SFTConfig(
     save_only_model=True,
     log_on_each_node=True,
     push_to_hub=True,
-    hub_model_id="Qwen2.5-0.5B-Lexo-Sort-SFT",
+    hub_model_id="Qwen3-1.7B-Lexo-Sort-SFT",
 )
 
 trainer = SFTTrainer(
     model=model,
     args=args,
-    train_dataset=dataset # type: ignore
+    train_dataset=train_dataset # type: ignore
 )
 
 trainer.train()
