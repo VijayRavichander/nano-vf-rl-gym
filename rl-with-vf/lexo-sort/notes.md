@@ -14,7 +14,7 @@ Accuracy: 0.06
 ONLY RL 
 Killed the run. Flat Line!! Also confirms the notion that when your pre RL model is really bad like zero at your task then RL can't really help
 
-SFT + RL 
+SFT + RL - vijay-ravichander/Qwen2.5-0.5B-Lexo-Sort - 300 Steps
 Dataset Size: 50
 Accuracy: 0.08
 
