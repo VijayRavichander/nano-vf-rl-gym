@@ -19,7 +19,7 @@ load_dotenv()
 
 wandb.init(project = "lexo-sort")
 
-model_name = 'vijay-ravichander/Lexo-Sort-Qwen-0.5B'
+model_name = 'willcb/Qwen3-1.7B'
 
 dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
@@ -39,7 +39,7 @@ system_prompt = f"""Respond in the following format:
 Sort the string lexographically without using code and give your final answer (the sorted letters) inside <answer></answer> tags"""
 
 
-def sort_reward_func(completion, answer, **kwargs) -> float:
+def reward_sort_func(completion, answer, **kwargs) -> float:
     """
     Check if the completion is sorted    
     """
@@ -48,7 +48,7 @@ def sort_reward_func(completion, answer, **kwargs) -> float:
 
 
 rubric = vf.Rubric(funcs=[
-    sort_reward_func,
+    reward_sort_func,
     parser.get_format_reward_func(),
 ], weights=[1.0, 0.2])
 
@@ -62,7 +62,7 @@ vf_env = vf.SingleTurnEnv(
     max_concurrent=100
 )
 
-args = vf.grpo_defaults(run_name = "lexo-sort-Qwen-0.5B")
+args = vf.grpo_defaults(run_name = "Qwen3-1.7B-Lexo-Sort-R1")
 args.num_iterations = 2
 args.per_device_train_batch_size = 4
 args.num_generations = 8

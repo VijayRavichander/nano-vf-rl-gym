@@ -17,7 +17,7 @@ dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 
 train_dataset = dataset.select(range(500)) #type: ignore
-eval_dataset = dataset.select((len(dataset) - 32, len(dataset) - 1)) #type: ignore
+eval_dataset = dataset.select((len(dataset) - 50, len(dataset) - 1)) #type: ignore
 
 tok_counts = []
 

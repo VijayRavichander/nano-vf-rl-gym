@@ -4,6 +4,16 @@ from dotenv import load_dotenv
 from datasets import load_dataset
 import verifiers as vf
 
+"""
+Eval before and after training
+
+CUDA_VISIBLE_DEVICES=0,1 vllm serve 'willcb/Qwen3-1.7B' --tensor_parallel_size 2 --max_model_len 8192 --dtype bfloat16 \
+    --gpu_memory_utilization 0.9 --enable_prefix_caching \
+    --host 0.0.0.0 --port 8001
+
+"""
+
+
 load_dotenv()
 
 client = OpenAI(base_url = os.getenv("DEEPINFRA_API_LINK"), api_key = os.getenv("DEEPINFRA_API_KEY"));
@@ -47,8 +57,4 @@ vf_env = vf.SingleTurnEnv(
 
 results = vf_env.evaluate(client, model="deepseek-ai/DeepSeek-V3-0324", num_samples = 10, max_concurrent = 128)
 
-dataset_dsv3 = vf_env.make_dataset(results)
 
-dataset_dsv3 = dataset_dsv3.sort("reward", reverse=True)
-
-dataset_dsv3.push_to_hub("V3-lexo-sort")
