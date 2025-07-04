@@ -20,12 +20,10 @@ dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 
-print(f"Before Filtering Dataset Size: {len(dataset)}")
 
 ## EVAL SPLIT
 dataset = dataset.select(range(len(dataset) - 50, len(dataset))) #type:ignore
 # dataset = dataset.select(range(0, 50)) #type:ignore
-
 
 print(f"Dataset Size: {len(dataset)}")
 
