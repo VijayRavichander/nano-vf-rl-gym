@@ -7,23 +7,27 @@ import verifiers as vf
 """
 Eval before and after training
 
-CUDA_VISIBLE_DEVICES=0,1 vllm serve 'willcb/Qwen3-1.7B' --tensor_parallel_size 2 --max_model_len 8192 --dtype bfloat16 \
+CUDA_VISIBLE_DEVICES=0 vllm serve 'willcb/Qwen3-1.7B' --max_model_len 8192 --dtype bfloat16 \
     --gpu_memory_utilization 0.9 --enable_prefix_caching \
-    --host 0.0.0.0 --port 8001
-
+    --host 0.0.0.0 --port 8005
 """
-
 
 load_dotenv()
 
-client = OpenAI(base_url = os.getenv("DEEPINFRA_API_LINK"), api_key = os.getenv("DEEPINFRA_API_KEY"));
+client = OpenAI(base_url = "http://0.0.0.0:8005/v1", api_key = "API_KEY");
 
 dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 
-## REMOVE THIS TO GENERATE DATA FROM THE ENTIRE DATASET
-dataset = dataset.select(range(10)) #type:ignore
+print(f"Before Filtering Dataset Size: {len(dataset)}")
+
+## EVAL SPLIT
+dataset = dataset.select(range(len(dataset) - 50, len(dataset))) #type:ignore
+# dataset = dataset.select(range(0, 50)) #type:ignore
+
+
+print(f"Dataset Size: {len(dataset)}")
 
 ## Setting the Parsers, Rubrics and Environment
 parser = vf.XMLParser(['think', 'answer'], answer_field="answer")
@@ -55,6 +59,10 @@ vf_env = vf.SingleTurnEnv(
     max_concurrent=100
 )
 
-results = vf_env.evaluate(client, model="deepseek-ai/DeepSeek-V3-0324", num_samples = 10, max_concurrent = 128)
+results = vf_env.evaluate(client, model="willcb/Qwen3-1.7B", num_samples = -1, max_concurrent = 128)
 
+reward = [1 if v == 1.2 else 0 for v in results["reward"]]
+acc = sum(reward) / len(reward)
+
+print(f"Accuracy: {acc}")
 

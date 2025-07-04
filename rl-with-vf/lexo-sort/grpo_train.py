@@ -29,7 +29,7 @@ dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['
 train_dataset = dataset.select(range(len(dataset) - 50)) #type: ignore
 
 # EVAL SIZE - 50
-eval_dataset = dataset.select((len(dataset) - 50, len(dataset) - 1)) #type: ignore
+eval_dataset = dataset.select(range(len(dataset) - 50, len(dataset))) #type: ignore
 
 parser = vf.XMLParser(['think', 'answer'], answer_field="answer")
 
