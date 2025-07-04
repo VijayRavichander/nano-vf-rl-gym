@@ -25,16 +25,18 @@ dataset = load_dataset('vijay-ravichander/V3-lexo-sort', split='train')
 
 dataset = dataset.remove_columns([c for c in dataset.column_names if c not in ['question', 'answer']]) #type: ignore
 
-train_dataset = dataset.select(range(len(dataset) - 32)) #type: ignore
-eval_dataset = dataset.select((len(dataset) - 32, len(dataset) - 1)) #type: ignore
+# TRAIN SIZE - 950
+train_dataset = dataset.select(range(len(dataset) - 50)) #type: ignore
 
+# EVAL SIZE - 50
+eval_dataset = dataset.select((len(dataset) - 50, len(dataset) - 1)) #type: ignore
 
 parser = vf.XMLParser(['think', 'answer'], answer_field="answer")
 
 system_prompt = f"""Respond in the following format:
 {parser.get_format_str()}
 
-Sort the string lexographically"""
+Sort the string lexographically without using code and give your final answer (the sorted letters) inside <answer></answer> tags"""
 
 
 def sort_reward_func(completion, answer, **kwargs) -> float:
